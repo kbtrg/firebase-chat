@@ -1,3 +1,6 @@
-## Zennで書いた本のリポジトリ
+## firebaseを用いた複数人リアルタイムチャットアプリ
 
-https://zenn.dev/hisho/books/617d8f9d6bd78b
+### 開発
+1. yarn
+2. yarn dev
+3. visit localhost:8080
