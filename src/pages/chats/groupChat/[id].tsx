@@ -3,13 +3,16 @@ import {
   Container,
   Flex,
   Heading,
+  HStack,
   Input,
   Spacer,
-  Text
+  Tag,
+  TagLabel, Text
 } from '@chakra-ui/react'
 import { getDatabase, onChildAdded, push, ref } from '@firebase/database'
 import { FirebaseError } from '@firebase/util'
 import { AuthGuard } from '@src/feature/auth/component/AuthGuard/AuthGuard'
+import type { GetServerSideProps } from 'next'
 import { FormEvent, useEffect, useRef, useState } from 'react'
 
 type MessageProps = {
@@ -29,16 +32,22 @@ const Message = ({ message }: MessageProps) => {
   )
 }
 
-export const Chat = () => {
+type Props = {
+  id: string
+}
+
+export const GroupChat: React.FC<Props> = ({ id }) => {
   const messagesElementRef = useRef<HTMLDivElement | null>(null)
   const [message, setMessage] = useState<string>('')
   const [isDisabled, setIsDisabled] = useState<boolean>(true)
+  console.log(id)
+
 
   const handleSendMessage = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
       const db = getDatabase()
-      const dbRef = ref(db, 'chat')
+      const dbRef = ref(db, `groupChat${id}`)
       await push(dbRef, {
         message,
       })
@@ -55,7 +64,7 @@ export const Chat = () => {
   useEffect(() => {
     try {
       const db = getDatabase()
-      const dbRef = ref(db, 'chat')
+      const dbRef = ref(db, `groupChat${id}`)
       return onChildAdded(dbRef, (snapshot) => {
         const message = String(snapshot.val()['message'] ?? '')
         setChats((prev) => [...prev, { message }])
@@ -86,7 +95,12 @@ export const Chat = () => {
         minHeight={0}
         bg="blue.100"
       >
-        <Heading>匿名チャット</Heading>
+        <HStack spacing={4}>
+          <Tag variant='subtle' colorScheme="orangez">
+            <TagLabel>グループID : {id}</TagLabel>
+          </Tag>
+        </HStack>
+        <Heading>グループチャット</Heading>
         <Spacer flex={'none'} height={4} aria-hidden />
         <Flex
           flexDirection={'column'}
@@ -101,12 +115,12 @@ export const Chat = () => {
         <Spacer aria-hidden />
         <Spacer height={2} aria-hidden flex={'none'} />
         <chakra.form bg={"white"} p={3} display={'flex'} gap={2} onSubmit={handleSendMessage}>
-          <Input 
+          <Input
             placeholder='Aa'
             bg={"gray.100"}
             borderColor={"white"}
             borderWidth={2}
-            value={message} 
+            value={message}
             onChange={(e) => {
               setMessage(e.target.value)
               if (e.target.value === "") {
@@ -123,4 +137,14 @@ export const Chat = () => {
   )
 }
 
-export default Chat
+export const getServerSideProps: GetServerSideProps = async ({
+  params
+}) => {
+  return {
+    props: {
+      id: params ? params["id"] : ""
+    },
+  };
+}
+
+export default GroupChat

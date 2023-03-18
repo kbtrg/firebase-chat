@@ -4,7 +4,6 @@ import { initializeFirebaseApp } from '@src/lib/firebase/firebase'
 import { AuthProvider } from '@src/feature/auth/provider/AuthProvider'
 import { Header } from '@src/component/Header/Header'
 import { theme } from '@src/lib/chakra/theme'
-import { Footer } from '@src/component/Footer/Footer'
 
 initializeFirebaseApp()
 function MyApp({ Component, pageProps }: AppProps) {
@@ -20,7 +19,6 @@ function MyApp({ Component, pageProps }: AppProps) {
         >
           <Component {...pageProps} />
         </chakra.main>
-        <Footer />
       </AuthProvider>
     </ChakraProvider>
   )

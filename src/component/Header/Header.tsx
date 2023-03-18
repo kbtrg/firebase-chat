@@ -1,22 +1,18 @@
 import {
-  Avatar,
-  Button,
-  chakra,
-  Container,
-  Flex,
+  Avatar, chakra, Flex,
   Heading,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
   Spacer,
-  useToast,
+  useToast
 } from '@chakra-ui/react'
-import { useAuthContext } from '@src/feature/auth/provider/AuthProvider'
 import { FirebaseError } from '@firebase/util'
-import { getAuth, signOut } from 'firebase/auth'
 import { Navigate } from '@src/component/Navigate/Navigate'
+import { useAuthContext } from '@src/feature/auth/provider/AuthProvider'
 import { useRouter } from '@src/hooks/useRouter/useRouter'
+import { getAuth, signOut } from 'firebase/auth'
 
 export const Header = () => {
   const { user } = useAuthContext()
