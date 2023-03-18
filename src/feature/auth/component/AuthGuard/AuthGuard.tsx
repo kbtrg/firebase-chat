@@ -16,7 +16,7 @@ export const AuthGuard = ({ children }: Props) => {
   }
 
   if (user === null) {
-    push((path) => path.signin.$url())
+    push((path) => path.$url())
     return null
   }
 

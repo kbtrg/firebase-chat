@@ -32,7 +32,7 @@ const Message = ({ message }: MessageProps) => {
   )
 }
 
-export const Page = () => {
+export const Chat = () => {
   const messagesElementRef = useRef<HTMLDivElement | null>(null)
   const [message, setMessage] = useState<string>('')
 
@@ -109,4 +109,4 @@ export const Page = () => {
   )
 }
 
-export default Page
+export default Chat

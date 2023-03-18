@@ -32,7 +32,7 @@ export const Header = () => {
         status: 'success',
         position: 'top',
       })
-      push((path) => path.signin.$url())
+      push((path) => path.$url())
     } catch (e) {
       if (e instanceof FirebaseError) {
         console.log(e)
@@ -50,25 +50,19 @@ export const Header = () => {
                 opacity: 0.8,
               }}
             >
-              <Heading color={'white'}>Firebase Realtime Chat</Heading>
+              <Heading color={'white'}>Firebase Chat</Heading>
             </chakra.a>
           </Navigate>
           <Spacer aria-hidden />
-          {user ? (
+          {user && (
             <Menu>
               <MenuButton>
                 <Avatar flexShrink={0} width={10} height={10} />
               </MenuButton>
               <MenuList py={0}>
-                <MenuItem onClick={handleSignOut}>サインアウト</MenuItem>
+                <MenuItem onClick={handleSignOut}>ログアウト</MenuItem>
               </MenuList>
             </Menu>
-          ) : (
-            <Navigate href={(path) => path.signin.$url()}>
-              <Button as={'a'} colorScheme={'teal'}>
-                サインイン
-              </Button>
-            </Navigate>
           )}
         </Flex>
       </Container>
