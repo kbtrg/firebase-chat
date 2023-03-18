@@ -1,12 +1,5 @@
-import { getApp, getApps, initializeApp } from 'firebase/app'
-import {
-  FIREBASE_API_KEY,
-  FIREBASE_APP_ID,
-  FIREBASE_AUTH_DOMAIN,
-  FIREBASE_MESSAGING_SENDER_ID,
-  FIREBASE_PROJECT_ID,
-  FIREBASE_STORAGE_BUCKET,
-} from '@src/constant/env'
+import { FIREBASE_API_KEY, FIREBASE_APP_ID, FIREBASE_AUTH_DOMAIN, FIREBASE_MESSAGING_SENDER_ID, FIREBASE_PROJECT_ID, FIREBASE_STORAGE_BUCKET } from 'env';
+import { getApp, getApps, initializeApp } from 'firebase/app';
 
 const firebaseConfig = {
   apiKey: FIREBASE_API_KEY,
