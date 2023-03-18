@@ -42,30 +42,28 @@ export const Header = () => {
 
   return (
     <chakra.header py={4} bgColor={'blue.600'}>
-      <Container maxW={'container.lg'}>
-        <Flex>
-          <Navigate href={(path) => path.$url()}>
-            <chakra.a
-              _hover={{
-                opacity: 0.8,
-              }}
-            >
-              <Heading color={'white'}>Firebase Chat</Heading>
-            </chakra.a>
-          </Navigate>
-          <Spacer aria-hidden />
-          {user && (
-            <Menu>
-              <MenuButton>
-                <Avatar flexShrink={0} width={10} height={10} />
-              </MenuButton>
-              <MenuList py={0}>
-                <MenuItem onClick={handleSignOut}>ログアウト</MenuItem>
-              </MenuList>
-            </Menu>
-          )}
-        </Flex>
-      </Container>
+      <Flex px={4}>
+        <Navigate href={(path) => path.$url()}>
+          <chakra.a
+            _hover={{
+              opacity: 0.8,
+            }}
+          >
+            <Heading color={'white'}>Firebase Chat</Heading>
+          </chakra.a>
+        </Navigate>
+        <Spacer aria-hidden />
+        {user && (
+          <Menu>
+            <MenuButton>
+              <Avatar flexShrink={0} width={10} height={10} />
+            </MenuButton>
+            <MenuList py={0}>
+              <MenuItem onClick={handleSignOut}>ログアウト</MenuItem>
+            </MenuList>
+          </Menu>
+        )}
+      </Flex>
     </chakra.header>
   )
 }

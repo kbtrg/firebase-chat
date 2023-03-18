@@ -23,7 +23,7 @@ const FirebaseChat: NextPage = () => {
       const auth = getAuth()
       await signInAnonymously(auth)
       toast({
-        title: 'ログインしました。',
+        title: '匿名でログインしました。',
         status: 'success',
         position: 'top',
       })
