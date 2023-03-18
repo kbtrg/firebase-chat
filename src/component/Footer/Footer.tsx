@@ -12,9 +12,6 @@ export const Footer = () => {
           <Navigate href={(path) => path.signin.$url()}>
             <Link lineHeight={1}>サインイン</Link>
           </Navigate>
-          <Navigate href={(path) => path.signup.$url()}>
-            <Link lineHeight={1}>サインアップ</Link>
-          </Navigate>
           <Navigate href={(path) => path.chat.$url()}>
             <Link lineHeight={1}>チャット</Link>
           </Navigate>
