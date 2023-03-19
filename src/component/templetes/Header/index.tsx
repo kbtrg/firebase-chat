@@ -2,14 +2,13 @@ import {
   Avatar, chakra, Flex,
   Heading,
   Menu,
-  MenuButton,
-  MenuItem,
+  MenuButton, MenuItem,
   MenuList,
   Spacer,
   useToast
 } from '@chakra-ui/react'
 import { FirebaseError } from '@firebase/util'
-import { Navigate } from '@src/component/Navigate/Navigate'
+import { Navigate } from '@src/component/atoms/Navigate/Navigate'
 import { useAuthContext } from '@src/feature/auth/provider/AuthProvider'
 import { useRouter } from '@src/hooks/useRouter/useRouter'
 import { getAuth, signOut } from 'firebase/auth'
@@ -55,6 +54,7 @@ export const Header = () => {
               <Avatar flexShrink={0} width={10} height={10} />
             </MenuButton>
             <MenuList py={0}>
+              <MenuItem onClick={() => push((path) => path.mypage.$url())}>ユーザー設定</MenuItem>
               <MenuItem onClick={handleSignOut}>ログアウト</MenuItem>
             </MenuList>
           </Menu>

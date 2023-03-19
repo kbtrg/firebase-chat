@@ -11,7 +11,10 @@ import {
 } from '@chakra-ui/react'
 import { getDatabase, onChildAdded, push, ref } from '@firebase/database'
 import { FirebaseError } from '@firebase/util'
+import { useUserContext } from '@src/component/contexts/UserContext'
 import { AuthGuard } from '@src/feature/auth/component/AuthGuard/AuthGuard'
+import { useAuthContext } from '@src/feature/auth/provider/AuthProvider'
+import { getDownloadURL, getStorage, ref as storageRef } from 'firebase/storage'
 import type { GetServerSideProps } from 'next'
 import { FormEvent, useEffect, useRef, useState } from 'react'
 
@@ -19,18 +22,6 @@ type MessageProps = {
   message: string
 }
 
-const Message = ({ message }: MessageProps) => {
-  return (
-    <Flex alignItems={'start'}>
-      <Avatar name='kubota ryugo' /> {/* src propsに画像のパスを入れて使用する */}
-      <Flex h={"48px"} ml={2} justify="center" align="center">
-        <Text bgColor={'white'} rounded={'md'} px={2} py={1}>
-          {message}
-        </Text>
-      </Flex>
-    </Flex>
-  )
-}
 
 type Props = {
   id: string
@@ -40,14 +31,16 @@ export const GroupChat: React.FC<Props> = ({ id }) => {
   const messagesElementRef = useRef<HTMLDivElement | null>(null)
   const [message, setMessage] = useState<string>('')
   const [isDisabled, setIsDisabled] = useState<boolean>(true)
-  console.log(id)
-
+  const { userName, imageUrl } = useUserContext()
+  console.log(userName)
+  console.log(imageUrl)
 
   const handleSendMessage = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
+      // この処理は別のファイルでまとめて実装する()
       const db = getDatabase()
-      const dbRef = ref(db, `groupChat${id}`)
+      const dbRef = ref(db, `chat/groupChat/${id}`)
       await push(dbRef, {
         message,
       })
@@ -60,11 +53,10 @@ export const GroupChat: React.FC<Props> = ({ id }) => {
   }
 
   const [chats, setChats] = useState<{ message: string }[]>([])
-
   useEffect(() => {
     try {
       const db = getDatabase()
-      const dbRef = ref(db, `groupChat${id}`)
+      const dbRef = ref(db, `chat/groupChat/${id}`)
       return onChildAdded(dbRef, (snapshot) => {
         const message = String(snapshot.val()['message'] ?? '')
         setChats((prev) => [...prev, { message }])
@@ -83,6 +75,19 @@ export const GroupChat: React.FC<Props> = ({ id }) => {
       top: messagesElementRef.current.scrollHeight,
     })
   }, [chats])
+
+  const Message = ({ message }: MessageProps) => {
+    return (
+      <Flex alignItems={'start'}>
+        <Avatar src={"imageUrl"} />
+        <Flex h={"48px"} ml={2} justify="center" align="center">
+          <Text bgColor={'white'} rounded={'md'} px={2} py={1}>
+            {message}
+          </Text>
+        </Flex>
+      </Flex>
+    )
+  }
 
   return (
     <AuthGuard>

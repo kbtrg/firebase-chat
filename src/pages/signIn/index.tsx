@@ -16,7 +16,7 @@ import { FormEvent, useState } from 'react'
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
 import { FirebaseError } from '@firebase/util'
 import { useRouter } from '@src/hooks/useRouter/useRouter'
-import { Navigate } from '@src/component/Navigate/Navigate'
+import { Navigate } from '@src/component/atoms/Navigate/Navigate'
 
 export const Page = () => {
   const [email, setEmail] = useState<string>('')

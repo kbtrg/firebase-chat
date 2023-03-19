@@ -3,13 +3,13 @@ import {
   Button, Container, Link, useToast
 } from '@chakra-ui/react'
 import { FirebaseError } from '@firebase/util'
-import { Navigate } from '@src/component/Navigate/Navigate'
+import { Navigate } from '@src/component/atoms/Navigate/Navigate'
 import { useAuthContext } from '@src/feature/auth/provider/AuthProvider'
 import { useRouter } from '@src/hooks/useRouter/useRouter'
 import { getAuth, signInAnonymously } from 'firebase/auth'
 import Head from 'next/head'
 import type { NextPage } from 'next/types'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 
 const FirebaseChat: NextPage = () => {
@@ -43,6 +43,16 @@ const FirebaseChat: NextPage = () => {
     }
   }
 
+  // レンダリング部分に条件として記述すると、チラつきが発生するのでuseEffectで判定をレンダリング後に遅延
+  const [isDisplaySignInAndSignOut, setIsDisplaySignInAndSignOut] = useState<boolean>(false)
+  useEffect(() => {
+    setIsDisplaySignInAndSignOut(!user || user.isAnonymous)
+  }, [user])
+  const [isDisplayJoinChatGroup, setIsDisplayJoinChatGroup] = useState<boolean>(false)
+  useEffect(() => {
+    setIsDisplayJoinChatGroup(Boolean(user && !user?.isAnonymous))
+  }, [user])
+
   return (
     <div>
       <Head>
@@ -60,7 +70,7 @@ const FirebaseChat: NextPage = () => {
           <Button onClick={handleAnonymousChat} isLoading={isLoading} colorScheme='teal' py={6} my={8}>
             <Link lineHeight={1}>匿名でチャットに参加</Link>
           </Button>
-          {(!user || user.isAnonymous) && (
+          {isDisplaySignInAndSignOut && (
             <>
               <Navigate href={(path) => path.signIn.$url()}>
                 <Button isLoading={isLoading} bg={"gray.400"} py={6} my={4}>
@@ -74,7 +84,7 @@ const FirebaseChat: NextPage = () => {
               </Navigate>
             </>
           )}
-          {user && !user?.isAnonymous && (
+          {isDisplayJoinChatGroup && (
             <Navigate href={(path) => path.chats.groupChat.edit.$url()}>
               <Button isLoading={isLoading} bg={"gray.400"} py={6} my={4}>
                 <Link lineHeight={1}>グループチャットに参加</Link>

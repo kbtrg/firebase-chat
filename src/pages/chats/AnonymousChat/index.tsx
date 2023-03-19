@@ -9,6 +9,7 @@ import {
 } from '@chakra-ui/react'
 import { getDatabase, onChildAdded, push, ref } from '@firebase/database'
 import { FirebaseError } from '@firebase/util'
+import { useUserContext } from '@src/component/contexts/UserContext'
 import { AuthGuard } from '@src/feature/auth/component/AuthGuard/AuthGuard'
 import { FormEvent, useEffect, useRef, useState } from 'react'
 
@@ -33,12 +34,15 @@ export const AnonymousChat = () => {
   const messagesElementRef = useRef<HTMLDivElement | null>(null)
   const [message, setMessage] = useState<string>('')
   const [isDisabled, setIsDisabled] = useState<boolean>(true)
+  const { userName, imageUrl } = useUserContext()
+  console.log(userName)
+  console.log(imageUrl)
 
   const handleSendMessage = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
       const db = getDatabase()
-      const dbRef = ref(db, 'anonymousChat')
+      const dbRef = ref(db, 'chat/anonymousChat')
       await push(dbRef, {
         message,
       })
@@ -55,7 +59,7 @@ export const AnonymousChat = () => {
   useEffect(() => {
     try {
       const db = getDatabase()
-      const dbRef = ref(db, 'anonymousChat')
+      const dbRef = ref(db, 'chat/anonymousChat')
       return onChildAdded(dbRef, (snapshot) => {
         const message = String(snapshot.val()['message'] ?? '')
         setChats((prev) => [...prev, { message }])
