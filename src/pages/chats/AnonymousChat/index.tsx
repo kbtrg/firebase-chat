@@ -19,27 +19,11 @@ type MessageProps = {
   message: string;
 };
 
-const Message = ({ message }: MessageProps) => {
-  return (
-    <Flex alignItems={"start"}>
-      <Avatar name="kubota ryugo" />{" "}
-      {/* src propsに画像のパスを入れて使用する */}
-      <Flex h={"48px"} ml={2} justify="center" align="center">
-        <Text bgColor={"white"} rounded={"md"} px={2} py={1}>
-          {message}
-        </Text>
-      </Flex>
-    </Flex>
-  );
-};
-
 export const AnonymousChat = () => {
   const messagesElementRef = useRef<HTMLDivElement | null>(null);
   const [message, setMessage] = useState<string>("");
   const [isDisabled, setIsDisabled] = useState<boolean>(true);
-  const { userName, imageUrl } = useUserContext();
-  console.log(userName);
-  console.log(imageUrl);
+  const { imageUrl } = useUserContext();
 
   const handleSendMessage = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -81,6 +65,19 @@ export const AnonymousChat = () => {
       top: messagesElementRef.current.scrollHeight,
     });
   }, [chats]);
+
+  const Message = ({ message }: MessageProps) => {
+    return (
+      <Flex alignItems={"start"}>
+        <Avatar src={imageUrl} />{" "}
+        <Flex h={"48px"} ml={2} justify="center" align="center">
+          <Text bgColor={"white"} rounded={"md"} px={2} py={1}>
+            {message}
+          </Text>
+        </Flex>
+      </Flex>
+    );
+  };
 
   return (
     <AuthGuard>

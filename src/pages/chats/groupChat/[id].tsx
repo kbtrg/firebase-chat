@@ -31,8 +31,7 @@ export const GroupChat: React.FC<Props> = ({ id }) => {
   const messagesElementRef = useRef<HTMLDivElement | null>(null);
   const [message, setMessage] = useState<string>("");
   const [isDisabled, setIsDisabled] = useState<boolean>(true);
-  const { userName, imageUrl } = useUserContext()
-  console.log({ "userInPage": {userName, imageUrl}})
+  const { imageUrl } = useUserContext();
 
   const handleSendMessage = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -78,7 +77,7 @@ export const GroupChat: React.FC<Props> = ({ id }) => {
   const Message = ({ message }: MessageProps) => {
     return (
       <Flex alignItems={"start"}>
-        <Avatar src={"imageUrl"} />
+        <Avatar src={imageUrl} />
         <Flex h={"48px"} ml={2} justify="center" align="center">
           <Text bgColor={"white"} rounded={"md"} px={2} py={1}>
             {message}

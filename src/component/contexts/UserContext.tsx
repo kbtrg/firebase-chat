@@ -10,51 +10,56 @@ import {
 
 export type User = {
   uid: string;
-  userName: string;
+  name: string;
   imageUrl: string;
 };
 
 const UserContext = createContext<User>({
   uid: "",
-  userName: "",
+  name: "",
   imageUrl: "",
 });
 
 type Props = { children: ReactNode };
 
 export const UserProvider = ({ children }: Props) => {
-  const [userName, setUserName] = useState<User["userName"]>("");
+  const [name, setName] = useState<User["name"]>("");
   const [imageUrl, setImageUrl] = useState<User["imageUrl"]>("");
-
-  const db = getDatabase();
+  
   const { user } = useAuthContext();
   const uid = user?.uid;
+  const db = getDatabase();
+  const dbRef = ref(db, `user/${uid}`);
 
   // userName設定
   useEffect(() => {
-    const dbNameRef = ref(db, `user/${uid}/name`);
-    onValue(dbNameRef, (snapshot) => {
-      const _userName = snapshot.val()
-      setUserName(_userName);
+    onValue(dbRef, (snapshot) => {
+      const _name = snapshot.val()?.name
+      setName(_name);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [uid]);
 
   // imageUrl設定
   useEffect(() => {
-    const dbImageRef = ref(db, `user/${uid}/imageUrl`);
-    onValue(dbImageRef, (snapshot) => {
-      const _imageUrl = snapshot.val()
+    onValue(dbRef, (snapshot) => {
+      const _imageUrl = snapshot.val()?.imageUrl
       setImageUrl(_imageUrl);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [name]);
+
+  console.log({
+    uid: uid ?? "",
+    name,
+    imageUrl,
+  })
 
   return (
     <UserContext.Provider
       value={{
         uid: uid ?? "",
-        userName,
+        name,
         imageUrl,
       }}
     >

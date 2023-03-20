@@ -25,11 +25,11 @@ import { FormEvent, useEffect, useState } from "react";
 const FirebaseChat: NextPage = () => {
   const [isDisabled, setIsDisabled] = useState<boolean>(true);
   const [image, setImage] = useState<Maybe<File>>();
-  const [userName, setUserName] = useState<string>("");
+  const [name, setName] = useState<string>("");
 
   useEffect(() => {
-    setIsDisabled(!Boolean(image && userName));
-  }, [image, userName]);
+    setIsDisabled(!Boolean(image && name));
+  }, [image, name]);
 
   const toast = useToast();
   const db = getDatabase();
@@ -42,27 +42,24 @@ const FirebaseChat: NextPage = () => {
     e.preventDefault();
     try {
       // firebase storageに画像を保存
-      if (!userName || !image) return;
+      if (!name || !image) return;
       const _storageRef = storageRef(storage, image.name);
       const uploadTask = uploadBytesResumable(_storageRef, image);
       uploadTask.on(
         "state_changed",
+        () => {
+          // firebase realtime databaseにユーザー名と登録画像のパスを保存
+          getDownloadURL(uploadTask.snapshot.ref).then(async (imageUrl) => {
+            const dbRef = databaseRef(db, `user/${uid}`);
+            await set(dbRef, {
+              name,
+              imageUrl
+            });
+          });
+        },
         (error) => {
           alert(error);
         },
-        () => {
-          // firebase realtime databaseにユーザー名と登録画像のパスを保存
-          getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-            const dbNameRef = databaseRef(db, `user/${uid}/name`);
-            const dbImageRef = databaseRef(db, `user/${uid}/imageUrl`);
-            await set(dbNameRef, {
-              userName,
-            });
-            await set(dbImageRef, {
-              downloadURL,
-            });
-          });
-        }
       );
       toast({
         title: "情報を更新しました。",
@@ -105,7 +102,7 @@ const FirebaseChat: NextPage = () => {
               placeholder="ユーザー名"
               mt={5}
               mb={10}
-              onChange={(e) => setUserName(e.target.value)}
+              onChange={(e) => setName(e.target.value)}
             />
           </FormControl>
           <Button
