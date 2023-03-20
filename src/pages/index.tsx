@@ -1,57 +1,61 @@
 import {
   AbsoluteCenter,
-  Button, Container, Link, useToast
-} from '@chakra-ui/react'
-import { FirebaseError } from '@firebase/util'
-import { Navigate } from '@src/component/atoms/Navigate/Navigate'
-import { useAuthContext } from '@src/feature/auth/provider/AuthProvider'
-import { useRouter } from '@src/hooks/useRouter/useRouter'
-import { getAuth, signInAnonymously } from 'firebase/auth'
-import Head from 'next/head'
-import type { NextPage } from 'next/types'
-import { useEffect, useState } from 'react'
-
+  Button,
+  Container,
+  Link,
+  useToast,
+} from "@chakra-ui/react";
+import { FirebaseError } from "@firebase/util";
+import { Navigate } from "@src/component/atoms/Navigate/Navigate";
+import { useAuthContext } from "@src/feature/auth/provider/AuthProvider";
+import { useRouter } from "@src/hooks/useRouter/useRouter";
+import { getAuth, signInAnonymously } from "firebase/auth";
+import Head from "next/head";
+import type { NextPage } from "next/types";
+import { useEffect, useState } from "react";
 
 const FirebaseChat: NextPage = () => {
-  const { user } = useAuthContext()
-  const [isLoading, setIsLoading] = useState<boolean>(false)
-  const toast = useToast()
-  const { push } = useRouter()
+  const { user } = useAuthContext();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const toast = useToast();
+  const { push } = useRouter();
 
   const handleAnonymousChat = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const auth = getAuth()
-      await signInAnonymously(auth)
+      const auth = getAuth();
+      await signInAnonymously(auth);
       toast({
-        title: '匿名でログインしました。',
-        status: 'success',
-        position: 'top',
-      })
-      push((path) => path.chats.AnonymousChat.$url())
+        title: "匿名でログインしました。",
+        status: "success",
+        position: "top",
+      });
+      push((path) => path.chats.AnonymousChat.$url());
     } catch (e) {
       toast({
-        title: 'エラーが発生しました。',
-        status: 'error',
-        position: 'top',
-      })
+        title: "エラーが発生しました。",
+        status: "error",
+        position: "top",
+      });
       if (e instanceof FirebaseError) {
-        console.log(e)
+        console.log(e);
       }
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   // レンダリング部分に条件として記述すると、チラつきが発生するのでuseEffectで判定をレンダリング後に遅延
-  const [isDisplaySignInAndSignOut, setIsDisplaySignInAndSignOut] = useState<boolean>(false)
+  const [isDisplaySignInAndSignOut, setIsDisplaySignInAndSignOut] =
+    useState<boolean>(false);
   useEffect(() => {
-    setIsDisplaySignInAndSignOut(!user || user.isAnonymous)
-  }, [user])
-  const [isDisplayJoinChatGroup, setIsDisplayJoinChatGroup] = useState<boolean>(false)
+    setIsDisplaySignInAndSignOut(!user || user.isAnonymous);
+  }, [user]);
+  const [isDisplayJoinChatGroup, setIsDisplayJoinChatGroup] =
+    useState<boolean>(false);
   useEffect(() => {
-    setIsDisplayJoinChatGroup(Boolean(user && !user?.isAnonymous))
-  }, [user])
+    setIsDisplayJoinChatGroup(Boolean(user && !user?.isAnonymous));
+  }, [user]);
 
   return (
     <div>
@@ -59,17 +63,28 @@ const FirebaseChat: NextPage = () => {
         <title>firebaseチャット</title>
         <meta name="description" content="課題用のチャットアプリです。" />
         <meta property="og:title" content="firebaseチャット" />
-        <meta property="og:description" content="課題用のチャットアプリです。" />
+        <meta
+          property="og:description"
+          content="課題用のチャットアプリです。"
+        />
         <meta charSet="utf-8" />
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
         <meta httpEquiv="content-language" content="ja" />
         <link rel="shortcut icon" href="favicon.ico" />
       </Head>
       <Container py={14}>
-        <AbsoluteCenter axis='both' display={"grid"}>
-          <Button onClick={handleAnonymousChat} isLoading={isLoading} colorScheme='teal' py={6} my={8}>
-            <Link lineHeight={1}>匿名でチャットに参加</Link>
-          </Button>
+        <AbsoluteCenter axis="both" display={"grid"}>
+          {!isDisplayJoinChatGroup && (
+            <Button
+              onClick={handleAnonymousChat}
+              isLoading={isLoading}
+              colorScheme="teal"
+              py={6}
+              my={8}
+            >
+              <Link lineHeight={1}>匿名でチャットに参加</Link>
+            </Button>
+          )}
           {isDisplaySignInAndSignOut && (
             <>
               <Navigate href={(path) => path.signIn.$url()}>
@@ -94,7 +109,7 @@ const FirebaseChat: NextPage = () => {
         </AbsoluteCenter>
       </Container>
     </div>
-  )
-}
+  );
+};
 
-export default FirebaseChat
+export default FirebaseChat;

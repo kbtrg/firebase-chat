@@ -1,77 +1,82 @@
-import { getDatabase, onChildAdded, ref } from '@firebase/database'
+import { getDatabase, onChildAdded, ref, onValue } from "@firebase/database";
+import { useAuthContext } from "@src/feature/auth/provider/AuthProvider";
 import {
   createContext,
   ReactNode,
   useContext,
   useEffect,
-  useRef,
-  useState
-} from 'react'
+  useState,
+} from "react";
 
 export type User = {
-  userName: string
-  imageUrl: string
-}
+  uid: string;
+  userName: string;
+  imageUrl: string;
+};
 
 const UserContext = createContext<User>({
+  uid: "",
   userName: "",
-  imageUrl: ""
-})
+  imageUrl: "",
+});
 
-type Props = { children: ReactNode }
+type Props = { children: ReactNode };
 
 export const UserProvider = ({ children }: Props) => {
-  const userName = useRef<User["userName"]>("")
-  const imageUrl = useRef<User["imageUrl"]>("")
-  // const [userName, setUserName] = useState<User["userName"]>("")
-  // const [imageUrl, setImageUrl] = useState<User["imageUrl"]>("")
-  const db = getDatabase()
+  const [userName, setUserName] = useState<User["userName"]>("");
+  const [imageUrl, setImageUrl] = useState<User["imageUrl"]>("");
 
+  const db = getDatabase();
+  const { user } = useAuthContext();
+  const uid = user?.uid;
+
+  // userName設定
   useEffect(() => {
-    try {
-      const dbNameRef = ref(db, `user/name`)
-      onChildAdded(dbNameRef, (snapshot) => {
-        const _userName = String(snapshot.val()['userName'] ?? '')
-        userName.current = _userName
-      })
-      // setUserName("xxxxxxxx")
-    } catch (error) {
-      userName.current = ""
-      throw error
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    console.log(`user/${uid}/name`)
+    const dbNameRef = ref(db, `user/${uid}/name`);
+    
+    onValue(dbNameRef, (snapshot) => {
+      const _userName = snapshot.val()
+      // console.log(_userName)
+      setUserName(_userName);
+    });
 
+    // onChildAdded(dbNameRef, (snapshot) => {
+    //   const _userName = String(snapshot.val()["userName"] ?? "");
+    //   // console.log(_userName)
+    //   setUserName(_userName);
+    // });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [uid]);
+
+  // imageUrl設定
   useEffect(() => {
-    (async () => {
-      try {
-        // const imagePath = await `user/imageUrl/${userName}`
-        // const dbImageRef = ref(db, imagePath)
-        // onChildAdded(dbImageRef, (snapshot) => {
-        //   const _imageUrl = String(snapshot.val()['downloadURL'] ?? '')
-        //   setImageUrl(_imageUrl)
-        // })
-        const path = `aaa/bbb/${userName.current}`
-        console.log(path)
-        imageUrl.current = path
-      } catch (error) {
-        imageUrl.current
-        throw error
-      }
-    })()
+    const dbImageRef = ref(db, `user/${uid}/imageUrl`);
+    onValue(dbImageRef, (snapshot) => {
+      const _imageUrl = snapshot.val()
+      // console.log(_imageUrl)
+      setImageUrl(_imageUrl);
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userName.current])
+  }, [userName]);
 
-  console.log(userName.current, imageUrl.current)
+  // 確認用
+  useEffect(() => {
+    // console.log({ "userInContext": userName, imageUrl })
+    // console.log({ userInContext: { userName, imageUrl } });
+  }, [uid, userName, imageUrl]);
 
   return (
-    <UserContext.Provider value={{
-      userName: userName.current,
-      imageUrl: imageUrl.current
-    }}>
+    <UserContext.Provider
+      value={{
+        uid: uid ?? "",
+        userName,
+        imageUrl,
+      }}
+    >
       {children}
     </UserContext.Provider>
-  )
-}
+  );
+};
 
-export const useUserContext = () => useContext(UserContext)
+export const useUserContext = () => useContext(UserContext);

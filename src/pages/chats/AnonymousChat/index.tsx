@@ -1,83 +1,86 @@
 import {
-  Avatar, Button, chakra,
+  Avatar,
+  Button,
+  chakra,
   Container,
   Flex,
   Heading,
   Input,
   Spacer,
-  Text
-} from '@chakra-ui/react'
-import { getDatabase, onChildAdded, push, ref } from '@firebase/database'
-import { FirebaseError } from '@firebase/util'
-import { useUserContext } from '@src/component/contexts/UserContext'
-import { AuthGuard } from '@src/feature/auth/component/AuthGuard/AuthGuard'
-import { FormEvent, useEffect, useRef, useState } from 'react'
+  Text,
+} from "@chakra-ui/react";
+import { getDatabase, onChildAdded, push, ref } from "@firebase/database";
+import { FirebaseError } from "@firebase/util";
+import { useUserContext } from "@src/component/contexts/UserContext";
+import { AuthGuard } from "@src/feature/auth/component/AuthGuard/AuthGuard";
+import { FormEvent, useEffect, useRef, useState } from "react";
 
 type MessageProps = {
-  message: string
-}
+  message: string;
+};
 
 const Message = ({ message }: MessageProps) => {
   return (
-    <Flex alignItems={'start'}>
-      <Avatar name='kubota ryugo' /> {/* src propsに画像のパスを入れて使用する */}
+    <Flex alignItems={"start"}>
+      <Avatar name="kubota ryugo" />{" "}
+      {/* src propsに画像のパスを入れて使用する */}
       <Flex h={"48px"} ml={2} justify="center" align="center">
-        <Text bgColor={'white'} rounded={'md'} px={2} py={1}>
+        <Text bgColor={"white"} rounded={"md"} px={2} py={1}>
           {message}
         </Text>
       </Flex>
     </Flex>
-  )
-}
+  );
+};
 
 export const AnonymousChat = () => {
-  const messagesElementRef = useRef<HTMLDivElement | null>(null)
-  const [message, setMessage] = useState<string>('')
-  const [isDisabled, setIsDisabled] = useState<boolean>(true)
-  const { userName, imageUrl } = useUserContext()
-  console.log(userName)
-  console.log(imageUrl)
+  const messagesElementRef = useRef<HTMLDivElement | null>(null);
+  const [message, setMessage] = useState<string>("");
+  const [isDisabled, setIsDisabled] = useState<boolean>(true);
+  const { userName, imageUrl } = useUserContext();
+  console.log(userName);
+  console.log(imageUrl);
 
   const handleSendMessage = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+    e.preventDefault();
     try {
-      const db = getDatabase()
-      const dbRef = ref(db, 'chat/anonymousChat')
+      const db = getDatabase();
+      const dbRef = ref(db, "chat/anonymousChat");
       await push(dbRef, {
         message,
-      })
-      setMessage('')
+      });
+      setMessage("");
     } catch (e) {
       if (e instanceof FirebaseError) {
-        console.log(e)
+        console.log(e);
       }
     }
-  }
+  };
 
-  const [chats, setChats] = useState<{ message: string }[]>([])
+  const [chats, setChats] = useState<{ message: string }[]>([]);
 
   useEffect(() => {
     try {
-      const db = getDatabase()
-      const dbRef = ref(db, 'chat/anonymousChat')
+      const db = getDatabase();
+      const dbRef = ref(db, "chat/anonymousChat");
       return onChildAdded(dbRef, (snapshot) => {
-        const message = String(snapshot.val()['message'] ?? '')
-        setChats((prev) => [...prev, { message }])
-      })
+        const message = String(snapshot.val()["message"] ?? "");
+        setChats((prev) => [...prev, { message }]);
+      });
     } catch (e) {
       if (e instanceof FirebaseError) {
-        console.error(e)
+        console.error(e);
       }
-      return
+      return;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, []);
 
   useEffect(() => {
     messagesElementRef.current?.scrollTo({
       top: messagesElementRef.current.scrollHeight,
-    })
-  }, [chats])
+    });
+  }, [chats]);
 
   return (
     <AuthGuard>
@@ -85,16 +88,16 @@ export const AnonymousChat = () => {
         pt={10}
         pb={5}
         flex={1}
-        display={'flex'}
-        flexDirection={'column'}
+        display={"flex"}
+        flexDirection={"column"}
         minHeight={0}
         bg="blue.100"
       >
         <Heading>匿名チャット</Heading>
-        <Spacer flex={'none'} height={4} aria-hidden />
+        <Spacer flex={"none"} height={4} aria-hidden />
         <Flex
-          flexDirection={'column'}
-          overflowY={'auto'}
+          flexDirection={"column"}
+          overflowY={"auto"}
           gap={2}
           ref={messagesElementRef}
         >
@@ -103,28 +106,36 @@ export const AnonymousChat = () => {
           ))}
         </Flex>
         <Spacer aria-hidden />
-        <Spacer height={2} aria-hidden flex={'none'} />
-        <chakra.form bg={"white"} p={3} display={'flex'} gap={2} onSubmit={handleSendMessage}>
-          <Input 
-            placeholder='Aa'
+        <Spacer height={2} aria-hidden flex={"none"} />
+        <chakra.form
+          bg={"white"}
+          p={3}
+          display={"flex"}
+          gap={2}
+          onSubmit={handleSendMessage}
+        >
+          <Input
+            placeholder="Aa"
             bg={"gray.100"}
             borderColor={"white"}
             borderWidth={2}
-            value={message} 
+            value={message}
             onChange={(e) => {
-              setMessage(e.target.value)
+              setMessage(e.target.value);
               if (e.target.value === "") {
-                setIsDisabled(true)
+                setIsDisabled(true);
               } else {
-                setIsDisabled(false)
+                setIsDisabled(false);
               }
             }}
           />
-          <Button type={'submit'} disabled={isDisabled} bg={"blue.300"}>送信</Button>
+          <Button type={"submit"} disabled={isDisabled} bg={"blue.300"}>
+            送信
+          </Button>
         </chakra.form>
       </Container>
     </AuthGuard>
-  )
-}
+  );
+};
 
-export default AnonymousChat
+export default AnonymousChat;

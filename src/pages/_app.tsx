@@ -1,12 +1,12 @@
-import type { AppProps } from 'next/app'
-import { chakra, ChakraProvider } from '@chakra-ui/react'
-import { initializeFirebaseApp } from '@src/lib/firebase/firebase'
-import { AuthProvider } from '@src/feature/auth/provider/AuthProvider'
-import { Header } from '@src/component/templetes/Header'
-import { theme } from '@src/lib/chakra/theme'
-import { UserProvider } from '@src/component/contexts/UserContext'
+import type { AppProps } from "next/app";
+import { chakra, ChakraProvider } from "@chakra-ui/react";
+import { initializeFirebaseApp } from "@src/lib/firebase/firebase";
+import { AuthProvider } from "@src/feature/auth/provider/AuthProvider";
+import { Header } from "@src/component/templetes/Header";
+import { theme } from "@src/lib/chakra/theme";
+import { UserProvider } from "@src/component/contexts/UserContext";
 
-initializeFirebaseApp()
+initializeFirebaseApp();
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ChakraProvider theme={theme}>
@@ -15,8 +15,8 @@ function MyApp({ Component, pageProps }: AppProps) {
           <Header />
           <chakra.main
             flex={1}
-            display={'flex'}
-            flexDirection={'column'}
+            display={"flex"}
+            flexDirection={"column"}
             minHeight={0}
           >
             <Component {...pageProps} />
@@ -24,7 +24,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         </UserProvider>
       </AuthProvider>
     </ChakraProvider>
-  )
+  );
 }
 
-export default MyApp
+export default MyApp;

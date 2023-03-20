@@ -1,5 +1,7 @@
 import {
-  Avatar, Button, chakra,
+  Avatar,
+  Button,
+  chakra,
   Container,
   Flex,
   Heading,
@@ -7,87 +9,92 @@ import {
   Input,
   Spacer,
   Tag,
-  TagLabel, Text
-} from '@chakra-ui/react'
-import { getDatabase, onChildAdded, push, ref } from '@firebase/database'
-import { FirebaseError } from '@firebase/util'
-import { useUserContext } from '@src/component/contexts/UserContext'
-import { AuthGuard } from '@src/feature/auth/component/AuthGuard/AuthGuard'
-import { useAuthContext } from '@src/feature/auth/provider/AuthProvider'
-import { getDownloadURL, getStorage, ref as storageRef } from 'firebase/storage'
-import type { GetServerSideProps } from 'next'
-import { FormEvent, useEffect, useRef, useState } from 'react'
+  TagLabel,
+  Text,
+} from "@chakra-ui/react";
+import { getDatabase, onChildAdded, push, ref } from "@firebase/database";
+import { FirebaseError } from "@firebase/util";
+import { useUserContext } from "@src/component/contexts/UserContext";
+import { AuthGuard } from "@src/feature/auth/component/AuthGuard/AuthGuard";
+import { useAuthContext } from "@src/feature/auth/provider/AuthProvider";
+import { initializeFirebaseApp } from "@src/lib/firebase/firebase";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import {
+  getDownloadURL,
+  getStorage,
+  ref as storageRef,
+} from "firebase/storage";
+import type { GetServerSideProps } from "next";
+import { FormEvent, useEffect, useRef, useState } from "react";
 
 type MessageProps = {
-  message: string
-}
-
+  message: string;
+};
 
 type Props = {
-  id: string
-}
+  id: string;
+};
 
 export const GroupChat: React.FC<Props> = ({ id }) => {
-  const messagesElementRef = useRef<HTMLDivElement | null>(null)
-  const [message, setMessage] = useState<string>('')
-  const [isDisabled, setIsDisabled] = useState<boolean>(true)
+  const messagesElementRef = useRef<HTMLDivElement | null>(null);
+  const [message, setMessage] = useState<string>("");
+  const [isDisabled, setIsDisabled] = useState<boolean>(true);
   const { userName, imageUrl } = useUserContext()
-  console.log(userName)
-  console.log(imageUrl)
+  console.log({ "userInPage": {userName, imageUrl}})
 
   const handleSendMessage = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+    e.preventDefault();
     try {
       // この処理は別のファイルでまとめて実装する()
-      const db = getDatabase()
-      const dbRef = ref(db, `chat/groupChat/${id}`)
+      const db = getDatabase();
+      const dbRef = ref(db, `chat/groupChat/${id}`);
       await push(dbRef, {
         message,
-      })
-      setMessage('')
+      });
+      setMessage("");
     } catch (e) {
       if (e instanceof FirebaseError) {
-        console.log(e)
+        console.log(e);
       }
     }
-  }
+  };
 
-  const [chats, setChats] = useState<{ message: string }[]>([])
+  const [chats, setChats] = useState<{ message: string }[]>([]);
   useEffect(() => {
     try {
-      const db = getDatabase()
-      const dbRef = ref(db, `chat/groupChat/${id}`)
+      const db = getDatabase();
+      const dbRef = ref(db, `chat/groupChat/${id}`);
       return onChildAdded(dbRef, (snapshot) => {
-        const message = String(snapshot.val()['message'] ?? '')
-        setChats((prev) => [...prev, { message }])
-      })
+        const message = String(snapshot.val()["message"] ?? "");
+        setChats((prev) => [...prev, { message }]);
+      });
     } catch (e) {
       if (e instanceof FirebaseError) {
-        console.error(e)
+        console.error(e);
       }
-      return
+      return;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, []);
 
   useEffect(() => {
     messagesElementRef.current?.scrollTo({
       top: messagesElementRef.current.scrollHeight,
-    })
-  }, [chats])
+    });
+  }, [chats]);
 
   const Message = ({ message }: MessageProps) => {
     return (
-      <Flex alignItems={'start'}>
+      <Flex alignItems={"start"}>
         <Avatar src={"imageUrl"} />
         <Flex h={"48px"} ml={2} justify="center" align="center">
-          <Text bgColor={'white'} rounded={'md'} px={2} py={1}>
+          <Text bgColor={"white"} rounded={"md"} px={2} py={1}>
             {message}
           </Text>
         </Flex>
       </Flex>
-    )
-  }
+    );
+  };
 
   return (
     <AuthGuard>
@@ -95,21 +102,21 @@ export const GroupChat: React.FC<Props> = ({ id }) => {
         pt={10}
         pb={5}
         flex={1}
-        display={'flex'}
-        flexDirection={'column'}
+        display={"flex"}
+        flexDirection={"column"}
         minHeight={0}
         bg="blue.100"
       >
         <HStack spacing={4}>
-          <Tag variant='subtle' colorScheme="orangez">
+          <Tag variant="subtle" colorScheme="orangez">
             <TagLabel>グループID : {id}</TagLabel>
           </Tag>
         </HStack>
         <Heading>グループチャット</Heading>
-        <Spacer flex={'none'} height={4} aria-hidden />
+        <Spacer flex={"none"} height={4} aria-hidden />
         <Flex
-          flexDirection={'column'}
-          overflowY={'auto'}
+          flexDirection={"column"}
+          overflowY={"auto"}
           gap={2}
           ref={messagesElementRef}
         >
@@ -118,38 +125,44 @@ export const GroupChat: React.FC<Props> = ({ id }) => {
           ))}
         </Flex>
         <Spacer aria-hidden />
-        <Spacer height={2} aria-hidden flex={'none'} />
-        <chakra.form bg={"white"} p={3} display={'flex'} gap={2} onSubmit={handleSendMessage}>
+        <Spacer height={2} aria-hidden flex={"none"} />
+        <chakra.form
+          bg={"white"}
+          p={3}
+          display={"flex"}
+          gap={2}
+          onSubmit={handleSendMessage}
+        >
           <Input
-            placeholder='Aa'
+            placeholder="Aa"
             bg={"gray.100"}
             borderColor={"white"}
             borderWidth={2}
             value={message}
             onChange={(e) => {
-              setMessage(e.target.value)
+              setMessage(e.target.value);
               if (e.target.value === "") {
-                setIsDisabled(true)
+                setIsDisabled(true);
               } else {
-                setIsDisabled(false)
+                setIsDisabled(false);
               }
             }}
           />
-          <Button type={'submit'} disabled={isDisabled} bg={"blue.300"}>送信</Button>
+          <Button type={"submit"} disabled={isDisabled} bg={"blue.300"}>
+            送信
+          </Button>
         </chakra.form>
       </Container>
     </AuthGuard>
-  )
-}
+  );
+};
 
-export const getServerSideProps: GetServerSideProps = async ({
-  params
-}) => {
+export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   return {
     props: {
-      id: params ? params["id"] : ""
+      id: params ? params["id"] : "",
     },
   };
-}
+};
 
-export default GroupChat
+export default GroupChat;
