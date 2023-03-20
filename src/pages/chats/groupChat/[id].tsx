@@ -10,20 +10,12 @@ import {
   Spacer,
   Tag,
   TagLabel,
-  Text,
+  Text
 } from "@chakra-ui/react";
 import { getDatabase, onChildAdded, push, ref } from "@firebase/database";
 import { FirebaseError } from "@firebase/util";
 import { useUserContext } from "@src/component/contexts/UserContext";
 import { AuthGuard } from "@src/feature/auth/component/AuthGuard/AuthGuard";
-import { useAuthContext } from "@src/feature/auth/provider/AuthProvider";
-import { initializeFirebaseApp } from "@src/lib/firebase/firebase";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import {
-  getDownloadURL,
-  getStorage,
-  ref as storageRef,
-} from "firebase/storage";
 import type { GetServerSideProps } from "next";
 import { FormEvent, useEffect, useRef, useState } from "react";
 

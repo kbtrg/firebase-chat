@@ -7,9 +7,9 @@ import {
   Flex,
   FormControl,
   Input,
-  useToast,
+  useToast
 } from "@chakra-ui/react";
-import { getDatabase, push, ref as databaseRef, set } from "@firebase/database";
+import { getDatabase, ref as databaseRef, set } from "@firebase/database";
 import { FirebaseError } from "@firebase/util";
 import { useAuthContext } from "@src/feature/auth/provider/AuthProvider";
 import type { Maybe } from "@src/lib/types";
@@ -17,7 +17,7 @@ import {
   getDownloadURL,
   getStorage,
   ref as storageRef,
-  uploadBytesResumable,
+  uploadBytesResumable
 } from "firebase/storage";
 import type { NextPage } from "next/types";
 import { FormEvent, useEffect, useState } from "react";
@@ -26,7 +26,6 @@ const FirebaseChat: NextPage = () => {
   const [isDisabled, setIsDisabled] = useState<boolean>(true);
   const [image, setImage] = useState<Maybe<File>>();
   const [userName, setUserName] = useState<string>("");
-  const [uploadProgress, setUploadProgress] = useState<Maybe<number>>(null);
 
   useEffect(() => {
     setIsDisabled(!Boolean(image && userName));
@@ -48,12 +47,6 @@ const FirebaseChat: NextPage = () => {
       const uploadTask = uploadBytesResumable(_storageRef, image);
       uploadTask.on(
         "state_changed",
-        (snapshot) => {
-          const progress = Math.round(
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-          );
-          setUploadProgress(progress);
-        },
         (error) => {
           alert(error);
         },
