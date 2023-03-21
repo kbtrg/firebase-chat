@@ -7,7 +7,7 @@ import {
   Heading,
   Input,
   Spacer,
-  Text
+  Text,
 } from "@chakra-ui/react";
 import { getDatabase, onChildAdded, push, ref } from "@firebase/database";
 import { FirebaseError } from "@firebase/util";
@@ -16,7 +16,7 @@ import { useAuthContext } from "@src/feature/auth/provider/AuthProvider";
 import type { Chat } from "@src/lib/types";
 import { FormEvent, useEffect, useRef, useState } from "react";
 
-type Message = Record<"chatInfo", Chat>
+type Message = Record<"chatInfo", Chat>;
 
 export const AnonymousChat = () => {
   const messagesElementRef = useRef<HTMLDivElement | null>(null);
@@ -33,7 +33,7 @@ export const AnonymousChat = () => {
     try {
       await push(dbChatRef, {
         uid,
-        message
+        message,
       });
       setMessage("");
     } catch (e) {
@@ -69,9 +69,14 @@ export const AnonymousChat = () => {
   const Message: React.FC<Message> = ({ chatInfo }: Message) => {
     return (
       <Flex alignItems={"start"}>
-        <Avatar/>
+        <Avatar />
         <Flex h={"48px"} ml={2} justify="center" align="center">
-          <Text bgColor={user?.uid === chatInfo.uid ? "green.200" : "white"} rounded={"md"} px={2} py={1}>
+          <Text
+            bgColor={user?.uid === chatInfo.uid ? "green.200" : "white"}
+            rounded={"md"}
+            px={2}
+            py={1}
+          >
             {chatInfo.message}
           </Text>
         </Flex>

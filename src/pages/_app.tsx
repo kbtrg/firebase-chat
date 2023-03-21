@@ -4,7 +4,6 @@ import { initializeFirebaseApp } from "@src/lib/firebase/firebase";
 import { AuthProvider } from "@src/feature/auth/provider/AuthProvider";
 import { Header } from "@src/component/templetes/Header";
 import { theme } from "@src/lib/chakra/theme";
-import { UserProvider } from "@src/component/contexts/UserContext";
 import { UsersProvider } from "@src/component/contexts/UsersContext";
 
 initializeFirebaseApp();
@@ -13,17 +12,15 @@ function MyApp({ Component, pageProps }: AppProps) {
     <ChakraProvider theme={theme}>
       <AuthProvider>
         <UsersProvider>
-          <UserProvider>
-            <Header />
-            <chakra.main
-              flex={1}
-              display={"flex"}
-              flexDirection={"column"}
-              minHeight={0}
-            >
-              <Component {...pageProps} />
-            </chakra.main>
-          </UserProvider>
+          <Header />
+          <chakra.main
+            flex={1}
+            display={"flex"}
+            flexDirection={"column"}
+            minHeight={0}
+          >
+            <Component {...pageProps} />
+          </chakra.main>
         </UsersProvider>
       </AuthProvider>
     </ChakraProvider>

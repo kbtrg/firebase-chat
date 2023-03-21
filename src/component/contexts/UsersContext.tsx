@@ -6,7 +6,7 @@ import {
   ReactNode,
   useContext,
   useEffect,
-  useState
+  useState,
 } from "react";
 
 const UsersContext = createContext<User[]>([]);
@@ -14,32 +14,28 @@ const UsersContext = createContext<User[]>([]);
 type Props = { children: ReactNode };
 
 export const UsersProvider = ({ children }: Props) => {
-  const [usersObject, setUsersObject] = useState<User[]>([])
-  const [users, setUsers] = useState<User[]>([])
+  const [usersObject, setUsersObject] = useState<User[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const db = getDatabase();
   const dbRef = ref(db, `users`);
 
   // dbからオブジェクト形式でデータを取得
   useEffect(() => {
     onValue(dbRef, (snapshot) => {
-      const _usersObject = snapshot.val()
+      const _usersObject = snapshot.val();
       setUsersObject(_usersObject);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, []);
 
   // 配列形式に変更
   useEffect(() => {
-    const _users = entries(usersObject).map(user => user[1])
+    const _users = entries(usersObject).map((user) => user[1]);
     setUsers(_users);
-  }, [usersObject])
+  }, [usersObject]);
 
   return (
-    <UsersContext.Provider
-      value={users}
-    >
-      {children}
-    </UsersContext.Provider>
+    <UsersContext.Provider value={users}>{children}</UsersContext.Provider>
   );
 };
 

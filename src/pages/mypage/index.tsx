@@ -7,7 +7,7 @@ import {
   Flex,
   FormControl,
   Input,
-  useToast
+  useToast,
 } from "@chakra-ui/react";
 import { getDatabase, push, ref as databaseRef } from "@firebase/database";
 import { FirebaseError } from "@firebase/util";
@@ -17,7 +17,7 @@ import {
   getDownloadURL,
   getStorage,
   ref as storageRef,
-  uploadBytesResumable
+  uploadBytesResumable,
 } from "firebase/storage";
 import type { NextPage } from "next/types";
 import { FormEvent, useEffect, useState } from "react";
@@ -61,7 +61,7 @@ const FirebaseChat: NextPage = () => {
               imageUrl,
             });
           });
-        },
+        }
       );
       toast({
         title: "情報を更新しました。",

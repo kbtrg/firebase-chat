@@ -12,14 +12,15 @@ import {
 } from "@chakra-ui/react";
 import { FirebaseError } from "@firebase/util";
 import { Navigate } from "@src/component/atoms/Navigate/Navigate";
-import { useUserContext } from "@src/component/contexts/UserContext";
+import { useUsersContext } from "@src/component/contexts/UsersContext";
 import { useAuthContext } from "@src/feature/auth/provider/AuthProvider";
 import { useRouter } from "@src/hooks/useRouter/useRouter";
 import { getAuth, signOut } from "firebase/auth";
 
 export const Header = () => {
   const { user } = useAuthContext();
-  const { imageUrl } = useUserContext();
+  const users = useUsersContext();
+  const _user = users.filter((_user) => _user.uid === user?.uid)[0];
   const toast = useToast();
   const { push } = useRouter();
 
@@ -56,7 +57,12 @@ export const Header = () => {
         {user && !user.isAnonymous && (
           <Menu>
             <MenuButton>
-              <Avatar src={imageUrl} flexShrink={0} width={10} height={10} />
+              <Avatar
+                src={_user?.imageUrl ?? ""}
+                flexShrink={0}
+                width={10}
+                height={10}
+              />
             </MenuButton>
             <MenuList py={0}>
               <MenuItem onClick={() => push((path) => path.mypage.$url())}>

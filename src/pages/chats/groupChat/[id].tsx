@@ -10,7 +10,7 @@ import {
   Spacer,
   Tag,
   TagLabel,
-  Text
+  Text,
 } from "@chakra-ui/react";
 import { getDatabase, onChildAdded, push, ref } from "@firebase/database";
 import { FirebaseError } from "@firebase/util";
@@ -21,7 +21,7 @@ import type { Chat } from "@src/lib/types";
 import type { GetServerSideProps } from "next";
 import { FormEvent, useEffect, useRef, useState } from "react";
 
-type Message = Record<"chatInfo", Chat>
+type Message = Record<"chatInfo", Chat>;
 
 type Props = {
   id: string;
@@ -35,7 +35,7 @@ export const GroupChat: React.FC<Props> = ({ id }) => {
   const dbChatRef = ref(db, `chat/groupChat/${id}`);
   const { user } = useAuthContext();
   const uid = user?.uid ?? "";
-  const users = useUsersContext()
+  const users = useUsersContext();
 
   // メッセージ保存
   const handleSendMessage = async (e: FormEvent<HTMLFormElement>) => {
@@ -43,7 +43,7 @@ export const GroupChat: React.FC<Props> = ({ id }) => {
     try {
       await push(dbChatRef, {
         uid,
-        message
+        message,
       });
       setMessage("");
     } catch (e) {
@@ -78,13 +78,18 @@ export const GroupChat: React.FC<Props> = ({ id }) => {
   }, [chats]);
 
   const Message: React.FC<Message> = ({ chatInfo }: Message) => {
-    const _user = users.filter(user => user.uid === chatInfo.uid)[0]
-    
+    const _user = users.filter((user) => user.uid === chatInfo.uid)[0];
+
     return (
       <Flex alignItems={"start"}>
         <Avatar src={_user?.imageUrl ?? ""} />
         <Flex h={"48px"} ml={2} justify="center" align="center">
-          <Text bgColor={user?.uid === _user?.uid ? "green.200" : "white"} rounded={"md"} px={2} py={1}>
+          <Text
+            bgColor={user?.uid === _user?.uid ? "green.200" : "white"}
+            rounded={"md"}
+            px={2}
+            py={1}
+          >
             {chatInfo.message}
           </Text>
         </Flex>
