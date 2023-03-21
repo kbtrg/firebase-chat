@@ -78,13 +78,13 @@ export const GroupChat: React.FC<Props> = ({ id }) => {
   }, [chats]);
 
   const Message: React.FC<Message> = ({ chatInfo }: Message) => {
-    const user = users.filter(_user => _user.uid === chatInfo.uid)[0]
+    const _user = users.filter(user => user.uid === chatInfo.uid)[0]
     
     return (
       <Flex alignItems={"start"}>
-        <Avatar src={user?.imageUrl ?? ""} />
+        <Avatar src={_user?.imageUrl ?? ""} />
         <Flex h={"48px"} ml={2} justify="center" align="center">
-          <Text bgColor={"white"} rounded={"md"} px={2} py={1}>
+          <Text bgColor={user?.uid === _user?.uid ? "green.200" : "white"} rounded={"md"} px={2} py={1}>
             {chatInfo.message}
           </Text>
         </Flex>

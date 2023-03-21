@@ -12,24 +12,28 @@ import {
 import { getDatabase, onChildAdded, push, ref } from "@firebase/database";
 import { FirebaseError } from "@firebase/util";
 import { AuthGuard } from "@src/feature/auth/component/AuthGuard/AuthGuard";
+import { useAuthContext } from "@src/feature/auth/provider/AuthProvider";
+import type { Chat } from "@src/lib/types";
 import { FormEvent, useEffect, useRef, useState } from "react";
 
-type MessageProps = {
-  message: string;
-};
+type Message = Record<"chatInfo", Chat>
 
 export const AnonymousChat = () => {
   const messagesElementRef = useRef<HTMLDivElement | null>(null);
   const [message, setMessage] = useState<string>("");
   const [isDisabled, setIsDisabled] = useState<boolean>(true);
+  const db = getDatabase();
+  const dbChatRef = ref(db, `chat/anonymousChat`);
+  const { user } = useAuthContext();
+  const uid = user?.uid ?? "";
 
+  // メッセージ保存
   const handleSendMessage = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const db = getDatabase();
-      const dbRef = ref(db, "chat/anonymousChat");
-      await push(dbRef, {
-        message,
+      await push(dbChatRef, {
+        uid,
+        message
       });
       setMessage("");
     } catch (e) {
@@ -39,15 +43,13 @@ export const AnonymousChat = () => {
     }
   };
 
-  const [chats, setChats] = useState<{ message: string }[]>([]);
-
+  // メッセージ読み込み
+  const [chats, setChats] = useState<Chat[]>([]);
   useEffect(() => {
     try {
-      const db = getDatabase();
-      const dbRef = ref(db, "chat/anonymousChat");
-      return onChildAdded(dbRef, (snapshot) => {
-        const message = String(snapshot.val()["message"] ?? "");
-        setChats((prev) => [...prev, { message }]);
+      return onChildAdded(dbChatRef, (snapshot) => {
+        const chatInfo = snapshot.val() ?? {};
+        setChats((prev) => [...prev, chatInfo]);
       });
     } catch (e) {
       if (e instanceof FirebaseError) {
@@ -64,13 +66,13 @@ export const AnonymousChat = () => {
     });
   }, [chats]);
 
-  const Message = ({ message }: MessageProps) => {
+  const Message: React.FC<Message> = ({ chatInfo }: Message) => {
     return (
       <Flex alignItems={"start"}>
-        <Avatar />{" "}
+        <Avatar/>
         <Flex h={"48px"} ml={2} justify="center" align="center">
-          <Text bgColor={"white"} rounded={"md"} px={2} py={1}>
-            {message}
+          <Text bgColor={user?.uid === chatInfo.uid ? "green.200" : "white"} rounded={"md"} px={2} py={1}>
+            {chatInfo.message}
           </Text>
         </Flex>
       </Flex>
@@ -97,7 +99,7 @@ export const AnonymousChat = () => {
           ref={messagesElementRef}
         >
           {chats.map((chat, index) => (
-            <Message message={chat.message} key={`ChatMessage_${index}`} />
+            <Message chatInfo={chat} key={`ChatMessage_${index}`} />
           ))}
         </Flex>
         <Spacer aria-hidden />
