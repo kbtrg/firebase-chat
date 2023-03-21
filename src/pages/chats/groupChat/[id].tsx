@@ -14,14 +14,14 @@ import {
 } from "@chakra-ui/react";
 import { getDatabase, onChildAdded, push, ref } from "@firebase/database";
 import { FirebaseError } from "@firebase/util";
-import { useUserContext } from "@src/component/contexts/UserContext";
+import { useUsersContext } from "@src/component/contexts/UsersContext";
 import { AuthGuard } from "@src/feature/auth/component/AuthGuard/AuthGuard";
+import { useAuthContext } from "@src/feature/auth/provider/AuthProvider";
+import type { Chat } from "@src/lib/types";
 import type { GetServerSideProps } from "next";
 import { FormEvent, useEffect, useRef, useState } from "react";
 
-type MessageProps = {
-  message: string;
-};
+type Message = Record<"chatInfo", Chat>
 
 type Props = {
   id: string;
@@ -29,35 +29,37 @@ type Props = {
 
 export const GroupChat: React.FC<Props> = ({ id }) => {
   const messagesElementRef = useRef<HTMLDivElement | null>(null);
-  const [message, setMessage] = useState<string>("");
   const [isDisabled, setIsDisabled] = useState<boolean>(true);
-  const { imageUrl } = useUserContext();
+  const [message, setMessage] = useState<string>("");
+  const db = getDatabase();
+  const dbChatRef = ref(db, `chat/groupChat/${id}`);
+  const { user } = useAuthContext();
+  const uid = user?.uid ?? "";
+  const users = useUsersContext()
 
+  // メッセージ保存
   const handleSendMessage = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      // この処理は別のファイルでまとめて実装する()
-      const db = getDatabase();
-      const dbRef = ref(db, `chat/groupChat/${id}`);
-      await push(dbRef, {
-        message,
+      await push(dbChatRef, {
+        uid,
+        message
       });
       setMessage("");
     } catch (e) {
       if (e instanceof FirebaseError) {
-        console.log(e);
+        console.error(e);
       }
     }
   };
 
-  const [chats, setChats] = useState<{ message: string }[]>([]);
+  // メッセージ読み込み
+  const [chats, setChats] = useState<Chat[]>([]);
   useEffect(() => {
     try {
-      const db = getDatabase();
-      const dbRef = ref(db, `chat/groupChat/${id}`);
-      return onChildAdded(dbRef, (snapshot) => {
-        const message = String(snapshot.val()["message"] ?? "");
-        setChats((prev) => [...prev, { message }]);
+      return onChildAdded(dbChatRef, (snapshot) => {
+        const chatInfo = snapshot.val() ?? {};
+        setChats((prev) => [...prev, chatInfo]);
       });
     } catch (e) {
       if (e instanceof FirebaseError) {
@@ -68,19 +70,22 @@ export const GroupChat: React.FC<Props> = ({ id }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // メッセージスクロール
   useEffect(() => {
     messagesElementRef.current?.scrollTo({
       top: messagesElementRef.current.scrollHeight,
     });
   }, [chats]);
 
-  const Message = ({ message }: MessageProps) => {
+  const Message: React.FC<Message> = ({ chatInfo }: Message) => {
+    const user = users.filter(_user => _user.uid === chatInfo.uid)[0]
+    
     return (
       <Flex alignItems={"start"}>
-        <Avatar src={imageUrl} />
+        <Avatar src={user?.imageUrl ?? ""} />
         <Flex h={"48px"} ml={2} justify="center" align="center">
           <Text bgColor={"white"} rounded={"md"} px={2} py={1}>
-            {message}
+            {chatInfo.message}
           </Text>
         </Flex>
       </Flex>
@@ -112,7 +117,7 @@ export const GroupChat: React.FC<Props> = ({ id }) => {
           ref={messagesElementRef}
         >
           {chats.map((chat, index) => (
-            <Message message={chat.message} key={`ChatMessage_${index}`} />
+            <Message chatInfo={chat} key={`ChatMessage_${index}`} />
           ))}
         </Flex>
         <Spacer aria-hidden />

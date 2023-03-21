@@ -7,11 +7,10 @@ import {
   Heading,
   Input,
   Spacer,
-  Text,
+  Text
 } from "@chakra-ui/react";
 import { getDatabase, onChildAdded, push, ref } from "@firebase/database";
 import { FirebaseError } from "@firebase/util";
-import { useUserContext } from "@src/component/contexts/UserContext";
 import { AuthGuard } from "@src/feature/auth/component/AuthGuard/AuthGuard";
 import { FormEvent, useEffect, useRef, useState } from "react";
 
@@ -23,7 +22,6 @@ export const AnonymousChat = () => {
   const messagesElementRef = useRef<HTMLDivElement | null>(null);
   const [message, setMessage] = useState<string>("");
   const [isDisabled, setIsDisabled] = useState<boolean>(true);
-  const { imageUrl } = useUserContext();
 
   const handleSendMessage = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -36,7 +34,7 @@ export const AnonymousChat = () => {
       setMessage("");
     } catch (e) {
       if (e instanceof FirebaseError) {
-        console.log(e);
+        console.error(e);
       }
     }
   };
@@ -69,7 +67,7 @@ export const AnonymousChat = () => {
   const Message = ({ message }: MessageProps) => {
     return (
       <Flex alignItems={"start"}>
-        <Avatar src={imageUrl} />{" "}
+        <Avatar />{" "}
         <Flex h={"48px"} ml={2} justify="center" align="center">
           <Text bgColor={"white"} rounded={"md"} px={2} py={1}>
             {message}

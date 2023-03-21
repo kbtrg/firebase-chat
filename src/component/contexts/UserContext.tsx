@@ -1,5 +1,6 @@
 import { getDatabase, onValue, ref } from "@firebase/database";
 import { useAuthContext } from "@src/feature/auth/provider/AuthProvider";
+import type { User } from "@src/lib/types";
 import {
   createContext,
   ReactNode,
@@ -7,12 +8,6 @@ import {
   useEffect,
   useState
 } from "react";
-
-export type User = {
-  uid: string;
-  name: string;
-  imageUrl: string;
-};
 
 const UserContext = createContext<User>({
   uid: "",
@@ -29,7 +24,7 @@ export const UserProvider = ({ children }: Props) => {
   const { user } = useAuthContext();
   const uid = user?.uid;
   const db = getDatabase();
-  const dbRef = ref(db, `user/${uid}`);
+  const dbRef = ref(db, `user`);
 
   // userName設定
   useEffect(() => {
@@ -48,12 +43,6 @@ export const UserProvider = ({ children }: Props) => {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [name]);
-
-  console.log({
-    uid: uid ?? "",
-    name,
-    imageUrl,
-  })
 
   return (
     <UserContext.Provider

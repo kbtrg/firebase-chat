@@ -9,7 +9,7 @@ import {
   Input,
   useToast
 } from "@chakra-ui/react";
-import { getDatabase, ref as databaseRef, set } from "@firebase/database";
+import { getDatabase, push, ref as databaseRef } from "@firebase/database";
 import { FirebaseError } from "@firebase/util";
 import { useAuthContext } from "@src/feature/auth/provider/AuthProvider";
 import type { Maybe } from "@src/lib/types";
@@ -47,18 +47,20 @@ const FirebaseChat: NextPage = () => {
       const uploadTask = uploadBytesResumable(_storageRef, image);
       uploadTask.on(
         "state_changed",
+        null,
+        (error) => {
+          alert(error);
+        },
         () => {
           // firebase realtime databaseにユーザー名と登録画像のパスを保存
           getDownloadURL(uploadTask.snapshot.ref).then(async (imageUrl) => {
-            const dbRef = databaseRef(db, `user/${uid}`);
-            await set(dbRef, {
+            const dbRef = databaseRef(db, `users`);
+            await push(dbRef, {
+              uid,
               name,
-              imageUrl
+              imageUrl,
             });
           });
-        },
-        (error) => {
-          alert(error);
         },
       );
       toast({
@@ -73,7 +75,7 @@ const FirebaseChat: NextPage = () => {
         position: "top",
       });
       if (e instanceof FirebaseError) {
-        console.log(e);
+        console.error(e);
       }
     }
   };

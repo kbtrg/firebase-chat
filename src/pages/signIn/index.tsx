@@ -46,7 +46,7 @@ export const Page = () => {
         position: "top",
       });
       if (e instanceof FirebaseError) {
-        console.log(e);
+        console.error(e);
       }
     } finally {
       setIsLoading(false);

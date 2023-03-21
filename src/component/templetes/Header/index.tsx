@@ -35,7 +35,7 @@ export const Header = () => {
       push((path) => path.$url());
     } catch (e) {
       if (e instanceof FirebaseError) {
-        console.log(e);
+        console.error(e);
       }
     }
   };
