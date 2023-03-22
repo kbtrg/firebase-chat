@@ -21,7 +21,7 @@ import type { Chat } from "@src/lib/types";
 import type { GetServerSideProps } from "next";
 import { FormEvent, useEffect, useRef, useState } from "react";
 
-type Message = Record<"chatInfo", Chat>;
+type CustomMessage = Record<"chatInfo", Chat>;
 
 type Props = {
   id: string;
@@ -77,7 +77,7 @@ export const GroupChat: React.FC<Props> = ({ id }) => {
     });
   }, [chats]);
 
-  const Message: React.FC<Message> = ({ chatInfo }: Message) => {
+  const CustomMessage: React.FC<CustomMessage> = ({ chatInfo }: CustomMessage) => {
     const _user = users.filter((user) => user.uid === chatInfo.uid)[0];
 
     return (
@@ -122,7 +122,7 @@ export const GroupChat: React.FC<Props> = ({ id }) => {
           ref={messagesElementRef}
         >
           {chats.map((chat, index) => (
-            <Message chatInfo={chat} key={`ChatMessage_${index}`} />
+            <CustomMessage chatInfo={chat} key={`ChatMessage_${index}`} />
           ))}
         </Flex>
         <Spacer aria-hidden />
