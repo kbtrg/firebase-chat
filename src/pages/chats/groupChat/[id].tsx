@@ -1,5 +1,6 @@
 import {
   Avatar,
+  Box,
   Button,
   chakra,
   Container,
@@ -10,7 +11,7 @@ import {
   Spacer,
   Tag,
   TagLabel,
-  Text,
+  Text
 } from "@chakra-ui/react";
 import { getDatabase, onChildAdded, push, ref } from "@firebase/database";
 import { FirebaseError } from "@firebase/util";
@@ -78,21 +79,26 @@ export const GroupChat: React.FC<Props> = ({ id }) => {
   }, [chats]);
 
   const CustomMessage: React.FC<CustomMessage> = ({ chatInfo }: CustomMessage) => {
-    const _user = users.filter((user) => user.uid === chatInfo.uid)[0];
+    const messageOwner = users.filter((user) => user.uid === chatInfo.uid)[0];
 
     return (
-      <Flex alignItems={"start"}>
-        <Avatar src={_user?.imageUrl ?? ""} />
-        <Flex h={"48px"} ml={2} justify="center" align="center">
+      <Flex alignItems={"start"} mb={2}>
+        <Avatar src={messageOwner?.imageUrl ?? ""} />
+        <Container>
+          <Text fontSize={"14px"} height={4} mt={-1}>
+            {messageOwner?.name}
+          </Text>
           <Text
-            bgColor={user?.uid === _user?.uid ? "green.200" : "white"}
+            display={"inline-block"}
+            bgColor={user?.uid === messageOwner?.uid ? "green.200" : "white"}
             rounded={"md"}
+            mt={2}
             px={2}
             py={1}
           >
             {chatInfo.message}
           </Text>
-        </Flex>
+        </Container>
       </Flex>
     );
   };
