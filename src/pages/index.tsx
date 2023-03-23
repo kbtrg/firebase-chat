@@ -10,7 +10,6 @@ import { Navigate } from "@src/component/atoms/Navigate/Navigate";
 import { useAuthContext } from "@src/feature/auth/provider/AuthProvider";
 import { useRouter } from "@src/hooks/useRouter/useRouter";
 import { getAuth, signInAnonymously } from "firebase/auth";
-import Head from "next/head";
 import type { NextPage } from "next/types";
 import { useEffect, useState } from "react";
 
@@ -59,19 +58,6 @@ const FirebaseChat: NextPage = () => {
 
   return (
     <div>
-      <Head>
-        <title>firebaseチャット</title>
-        <meta name="description" content="課題用のチャットアプリです。" />
-        <meta property="og:title" content="firebaseチャット" />
-        <meta
-          property="og:description"
-          content="課題用のチャットアプリです。"
-        />
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-        <meta httpEquiv="content-language" content="ja" />
-        <link rel="shortcut icon" href="favicon.ico" />
-      </Head>
       <Container py={14}>
         <AbsoluteCenter axis="both" display={"grid"}>
           {!isDisplayJoinChatGroup && (
