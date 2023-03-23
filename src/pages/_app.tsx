@@ -7,7 +7,8 @@ import { theme } from "@src/lib/chakra/theme";
 import { UsersProvider } from "@src/component/contexts/UsersContext";
 
 initializeFirebaseApp();
-function MyApp({ Component, pageProps }: AppProps) {
+
+const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
   return (
     <ChakraProvider theme={theme}>
       <AuthProvider>
