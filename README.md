@@ -2,7 +2,7 @@
 
 ### 開発
 
-1. yarn
+1. yarn install
 2. firebaseのプロジェクトを作成し、env.local.sampleを元にenv.localを作成
 3. firebaseのauthenticationMethodを匿名とメールパスワード方式を有効化
 4. yarn dev
